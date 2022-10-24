@@ -1,13 +1,11 @@
 # objetivo ----------------------------------------------------------------------------------------------
 "quais equipes tem melhor taxa vitoria vs corrida?"
 
-
 # packages ----------------------------------------------------------------------------------------------
 library(tidyverse)
 library(janitor)
 library(gt)
 library(gtExtras)
-
 
 # data --------------------------------------------------------------------------------------------------
 
@@ -25,7 +23,6 @@ data_constructors %>% glimpse()
 #amostra
 data_results %>% slice_sample(n=5)
 data_constructors %>% slice_sample(n=5)
-
 
 # join tables ------------------------------------------------------------------------------------------
 data_f1_trans <- 
@@ -47,16 +44,14 @@ data_f1_trans %>%
   gt() %>% 
   gt_plt_bullet(column = race,
                 target = win, 
-                color = "red",
-                target_color = "navy") %>% 
-  gt_theme_nytimes() %>% 
+                colors = c("red", "navy"),
+                keep_column = TRUE) %>% 
+                gt_theme_nytimes() %>% 
   fmt_symbol_first(column = ratio,
                    suffix = "%",
                    decimals = 1, 
                    scale_by = 100) %>% 
-  cols_label(
-    race = html("<span style = 'color:red;'>Race</span> vs <span style='color:navy;'>Win</span>")
-  ) %>% 
+  cols_label(race = html("<span style = 'color:red;'>Race</span> vs <span style='color:navy;'>Win</span>")) %>% 
   tab_header(title = "F1 races and wins",
              subtitle = md("**Mercedes** leads wins to races ratio")) %>% 
   gt_highlight_rows(rows = name == "Mercedes",
@@ -66,5 +61,3 @@ data_f1_trans %>%
                  color = "grey80",
                  weight = px(1)) %>% 
   tab_source_note(md("Data: TidyTuesday **Package**: gtExtras by thomas_mock"))
-
-

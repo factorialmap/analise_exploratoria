@@ -1,0 +1,118 @@
+---
+title: "Modelo documento"
+author: "Marcelo"
+format: pdf
+editor: visual
+execute: 
+  message: false
+  warning: false
+lang: pt
+bibliography: references.bib
+toc: true
+---
+
+## Demanda
+
+-   Descobrir se existem características nos veículos que consigam explicar e prever o consumo de combustível e determinar as milhas por galão.
+
+-   Identificar de quais veículos as pessoas gostam mais.
+
+![Etiqueta de consumo de combustível](fuel_economy.png){fig-align="center"}
+
+## Fluxo
+
+Para facilitar o entendimento dos envolvidos no projeto, optamos por apresentar o seguinte fluxo de trabalho.
+
+```{mermaid}
+%%|fig-width: 6.5
+
+flowchart LR
+A[Dados]-->B{Quantidade \n suficiente?}
+B-->C[Análise exploratória]
+B-->D[Coletar mais dados]
+D-->C
+C-->E[Causa raíz]
+E-->F[Propor soluções]
+
+```
+
+## Fórmulas
+
+Calculo de amostra variável nominal ou ordinal de população finita.
+
+$n=\frac{z^2.p.q.N}{e^2.(N-1).p.q}$
+
+$$
+n=\frac{z^2.p.q.N}{e^2.(N-1).p.q}
+$$
+
+$n$: tamanho da amostra
+
+$z^2$: intervalo de confiança (e.g 95% = 1.96)
+
+## Tabelas
+
+| Renda | Marca    | Modelo  |
+|-------|----------|---------|
+| 65K   | Toyota   | Camry   |
+| 50k   | Toyota   | Corolla |
+| 40k   | Infiniti | FX50    |
+
+: Preferência por veículos
+
+## Análise exploratória
+
+```{r}
+
+library(tidyverse)
+
+mtcars %>% cor() %>% corrplot::corrplot(type = "upper")
+
+
+
+```
+
+## Modelo estatístico
+
+Vamos aplicar um modelo de regressão linear para este problema.
+
+```{r}
+
+mdl_fit_lm_mtcars <- 
+  lm(mpg~wt, data = mtcars) %>% 
+  broom::tidy()
+```
+
+O peso é uma variável importante e pode ser usado para prever a quantidade de milhas por galão que cada veículo faz.
+
+O valor de P para o peso é `r scales::pvalue(mdl_fit_lm_mtcars$p.value[[2]])` a mediana de milhas por galão dos veiculos da amostra é `r median(mtcars$mpg)`.
+
+Neste caso para cada unidade adicionada de **`r mdl_fit_lm_mtcars$term[[2]]`** os veículos fazem `r mdl_fit_lm_mtcars$estimate[[2]]` milhas por galão.
+
+**Usando o pacote gtsummary**
+
+```{r}
+library(gtsummary)
+
+mdl_fit_log_reg_mtcars <- 
+  glm(vs~mpg + wt, 
+      data = mtcars, 
+      family = binomial(link= "logit"))
+
+
+tbl_fit_log_reg_mtcars <- 
+  tbl_regression(mdl_fit_log_reg_mtcars, 
+                 exponentiate = TRUE)
+
+
+```
+
+`r inline_text(tbl_fit_log_reg_mtcars, variable = mpg)`
+
+`r inline_text(tbl_fit_log_reg_mtcars, variable = mpg, pattern = "(OR {estimate};95%IC {conf.low},{conf.high};{p.value})")`
+
+Citação @Naoum2021 sdfsd
+
+Citação 2 @Etges2022
+
+## Referências
